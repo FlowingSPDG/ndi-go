@@ -132,7 +132,7 @@ type VideoFrameV2 struct {
 	Timecode int64
 
 	//The video data itself.
-	Data []uint8
+	Data *byte
 
 	//The inter line stride of the video data, in bytes.
 	LineStride int32
@@ -160,6 +160,12 @@ func (vf *VideoFrameV2) SetDefault() {
 	vf.LineStride = 0
 	vf.Metadata = nil
 	vf.Timestamp = SendTimecodeEmpty
+}
+
+func (vf *VideoFrameV2) ReadData() []byte {
+	v := (*[1920 * 1080 * 4]byte)(unsafe.Pointer(vf.Data)) // Read
+	b := v[:vf.LineStride]
+	return b
 }
 
 func NewAudioFrameV2() *AudioFrameV2 {
